@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elena Burger — Writer, a16z</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue: #0050FF;
+      --orange: #F38020;
+      --white: #FAFAFA;
+      --black: #0A0A0A;
+      --gray-light: #E5E5E5;
+      --gray-mid: #999999;
+      --font-display: 'Syne', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-mono);
+      background: var(--white);
+      color: var(--black);
+      overflow-x: hidden;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* Grid overlay */
+    .grid-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        linear-gradient(to right, var(--gray-light) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--gray-light) 1px, transparent 1px);
+      background-size: 80px 80px;
+      opacity: 0.5;
+    }
+
+    /* Progress bar */
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: var(--blue);
+      z-index: 1000;
+      width: 0%;
+      transition: width 0.1s ease-out;
+    }
+
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 24px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+      background: linear-gradient(to bottom, var(--white) 60%, transparent);
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+      color: var(--black);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+    }
+
+    .nav-links a {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gray-mid);
+      text-decoration: none;
+      transition: color 0.2s ease;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--orange);
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--black);
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 120px 48px 80px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-tag {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--blue);
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: fadeSlideUp 0.6s ease forwards;
+      animation-delay: 0.2s;
+    }
+
+    .hero-name {
+      font-family: var(--font-display);
+      font-size: clamp(48px, 12vw, 160px);
+      font-weight: 800;
+      line-height: 0.9;
+      letter-spacing: -0.03em;
+      margin-bottom: 32px;
+      opacity: 0;
+      animation: fadeSlideUp 0.6s ease forwards;
+      animation-delay: 0.4s;
+    }
+
+    .hero-name span {
+      display: block;
+    }
+
+    .hero-name .last-name {
+      color: var(--blue);
+    }
+
+    .hero-role {
+      font-size: 16px;
+      color: var(--gray-mid);
+      max-width: 480px;
+      opacity: 0;
+      animation: fadeSlideUp 0.6s ease forwards;
+      animation-delay: 0.6s;
+    }
+
+    .hero-role strong {
+      color: var(--black);
+      font-weight: 500;
+    }
+
+    .hero-cta {
+      margin-top: 48px;
+      display: flex;
+      gap: 16px;
+      opacity: 0;
+      animation: fadeSlideUp 0.6s ease forwards;
+      animation-delay: 0.8s;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      text-decoration: none;
+      border: 1px solid var(--black);
+      background: transparent;
+      color: var(--black);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: var(--black);
+      color: var(--white);
+    }
+
+    .btn-primary {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: var(--white);
+    }
+
+    .btn-primary:hover {
+      background: var(--black);
+      border-color: var(--black);
+    }
+
+    /* Scroll indicator */
+    .scroll-indicator {
+      position: absolute;
+      bottom: 48px;
+      left: 48px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gray-mid);
+      opacity: 0;
+      animation: fadeIn 0.6s ease forwards;
+      animation-delay: 1.2s;
+    }
+
+    .scroll-line {
+      width: 48px;
+      height: 1px;
+      background: var(--gray-mid);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .scroll-line::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: var(--orange);
+      animation: scrollPulse 2s ease infinite;
+    }
+
+    /* Coordinate display */
+    .coordinates {
+      position: absolute;
+      bottom: 48px;
+      right: 48px;
+      font-size: 11px;
+      color: var(--gray-mid);
+      text-align: right;
+      opacity: 0;
+      animation: fadeIn 0.6s ease forwards;
+      animation-delay: 1s;
+    }
+
+    .coordinates span {
+      display: block;
+    }
+
+    .coordinates .value {
+      color: var(--orange);
+      font-weight: 500;
+    }
+
+    /* Section styles */
+    section {
+      padding: 120px 48px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      margin-bottom: 64px;
+    }
+
+    .section-number {
+      font-size: 11px;
+      color: var(--orange);
+      font-weight: 500;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(32px, 6vw, 64px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: var(--gray-light);
+    }
+
+    /* About section */
+    .about-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+
+    .about-text {
+      font-size: 18px;
+      line-height: 1.8;
+      color: var(--black);
+    }
+
+    .about-text p {
+      margin-bottom: 24px;
+    }
+
+    .about-text .highlight {
+      background: linear-gradient(120deg, transparent 0%, rgba(0, 80, 255, 0.1) 50%, transparent 100%);
+      padding: 0 4px;
+    }
+
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+
+    .stat-item {
+      padding: 24px;
+      border: 1px solid var(--gray-light);
+      transition: all 0.3s ease;
+      cursor: default;
+    }
+
+    .stat-item:hover {
+      border-color: var(--blue);
+      transform: translateY(-4px);
+    }
+
+    .stat-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--gray-mid);
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--black);
+    }
+
+    .stat-value .accent {
+      color: var(--blue);
+    }
+
+    /* Philosophy section */
+    .philosophy-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: var(--gray-light);
+    }
+
+    .philosophy-item {
+      background: var(--white);
+      padding: 48px;
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+    }
+
+    .philosophy-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 0;
+      background: var(--orange);
+      transition: height 0.4s ease;
+    }
+
+    .philosophy-item:hover::before {
+      height: 100%;
+    }
+
+    .philosophy-icon {
+      width: 48px;
+      height: 48px;
+      border: 1px solid var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      font-size: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .philosophy-item:hover .philosophy-icon {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: var(--white);
+    }
+
+    .philosophy-title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .philosophy-desc {
+      font-size: 13px;
+      color: var(--gray-mid);
+      line-height: 1.7;
+    }
+
+    /* Work/Writing section */
+    .writing-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .writing-item {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 32px;
+      align-items: center;
+      padding: 32px 0;
+      border-bottom: 1px solid var(--gray-light);
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.3s ease;
+    }
+
+    .writing-item:hover {
+      padding-left: 24px;
+      background: linear-gradient(90deg, rgba(0, 80, 255, 0.05) 0%, transparent 50%);
+    }
+
+    .writing-index {
+      font-size: 11px;
+      color: var(--gray-mid);
+      min-width: 32px;
+    }
+
+    .writing-title {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    .writing-item:hover .writing-title {
+      color: var(--blue);
+    }
+
+    .writing-meta {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gray-mid);
+    }
+
+    .writing-arrow {
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--gray-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+
+    .writing-item:hover .writing-arrow {
+      opacity: 1;
+      transform: translateX(0);
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    /* Contact section */
+    .contact-section {
+      background: var(--black);
+      color: var(--white);
+    }
+
+    .contact-section .section-title {
+      color: var(--white);
+    }
+
+    .contact-section .section-line {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 80px;
+    }
+
+    .contact-text {
+      font-size: 24px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .contact-text strong {
+      color: var(--white);
+      font-weight: 500;
+    }
+
+    .contact-links {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.5);
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .contact-link:hover {
+      color: var(--orange);
+      transform: translateX(8px);
+    }
+
+    .contact-link-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: rgba(255, 255, 255, 0.3);
+      min-width: 80px;
+    }
+
+    /* Footer */
+    footer {
+      padding: 24px 48px;
+      background: var(--black);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer span {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    footer .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    footer .status-dot {
+      width: 6px;
+      height: 6px;
+      background: #00FF88;
+      border-radius: 50%;
+      animation: pulse 2s ease infinite;
+    }
+
+    /* Tooltip system */
+    [data-tooltip] {
+      position: relative;
+    }
+
+    [data-tooltip]::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(8px);
+      padding: 8px 12px;
+      background: var(--black);
+      color: var(--white);
+      font-size: 11px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.2s ease;
+      z-index: 100;
+    }
+
+    [data-tooltip]:hover::after {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Animations */
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes scrollPulse {
+      0%, 100% { left: -100%; }
+      50% { left: 100%; }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* Scroll animations */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .about-content {
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+
+      .philosophy-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .contact-grid {
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        padding: 16px 24px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      section, .hero {
+        padding: 80px 24px;
+      }
+
+      .about-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .writing-item {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .writing-arrow {
+        display: none;
+      }
+
+      .scroll-indicator,
+      .coordinates {
+        display: none;
+      }
+
+      footer {
+        padding: 16px 24px;
+        flex-direction: column;
+        gap: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress-bar" id="progressBar"></div>
+  <div class="grid-overlay"></div>
+
+  <nav>
+    <a href="#" class="nav-logo">E.B.</a>
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#philosophy">Philosophy</a>
+      <a href="#writing">Writing</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-tag">Writer / a16z New Media Team</div>
+    <h1 class="hero-name">
+      <span>Elena</span>
+      <span class="last-name">Burger</span>
+    </h1>
+    <p class="hero-role">
+      Collaborating with partners and founders on <strong>longform blogging</strong>.
+      Making contact with reality. Building world models.
+    </p>
+    <div class="hero-cta">
+      <a href="https://a16z.com/news" class="btn btn-primary" target="_blank">Read on a16z</a>
+      <a href="https://twitter.com/VirtualElena" class="btn" target="_blank">@VirtualElena</a>
+    </div>
+
+    <div class="scroll-indicator">
+      <div class="scroll-line"></div>
+      Scroll to explore
+    </div>
+
+    <div class="coordinates">
+      <span>SAN FRANCISCO</span>
+      <span class="value">37.7749° N, 122.4194° W</span>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="section-header reveal">
+      <span class="section-number">01</span>
+      <h2 class="section-title">About</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="about-content">
+      <div class="about-text reveal">
+        <p>
+          I've spent the majority of my professional life circling the thing that I love the most: <span class="highlight">writing</span>. For a period as an investor, it felt like "enough" to write blogposts and theses as a sidequest in the afterhours.
+        </p>
+        <p>
+          Later, as an operator doing comms and marketing, it felt like enough to lead product rollouts, corralling our various almost-live releases into a story that could be legible to the outside world.
+        </p>
+        <p>
+          But in the back of my mind, I knew I wanted to be <strong>writing full-time</strong>. Now I'm doing exactly that at a16z, the first place where I truly felt professionally at home.
+        </p>
+      </div>
+
+      <div class="about-stats reveal">
+        <div class="stat-item" data-tooltip="Working with Erik Torenberg, Alex Danco & team">
+          <div class="stat-label">Team</div>
+          <div class="stat-value">New <span class="accent">Media</span></div>
+        </div>
+        <div class="stat-item" data-tooltip="Collaborating with partners and portfolio founders">
+          <div class="stat-label">Focus</div>
+          <div class="stat-value">Long<span class="accent">form</span></div>
+        </div>
+        <div class="stat-item" data-tooltip="Previously investor & operator">
+          <div class="stat-label">Background</div>
+          <div class="stat-value"><span class="accent">VC</span> + Ops</div>
+        </div>
+        <div class="stat-item" data-tooltip="Building and sharing world models">
+          <div class="stat-label">Mission</div>
+          <div class="stat-value">Go <span class="accent">Direct</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="philosophy">
+    <div class="section-header reveal">
+      <span class="section-number">02</span>
+      <h2 class="section-title">Philosophy</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="philosophy-grid reveal">
+      <div class="philosophy-item">
+        <div class="philosophy-icon">01</div>
+        <h3 class="philosophy-title">Contact with Reality</h3>
+        <p class="philosophy-desc">
+          If you want to write, it's tremendously valuable to do things that don't involve writing. That's how you make contact with reality and build your own world model.
+        </p>
+      </div>
+      <div class="philosophy-item">
+        <div class="philosophy-icon">02</div>
+        <h3 class="philosophy-title">Truth Over Fiction</h3>
+        <p class="philosophy-desc">
+          Some writing exists to tell the truth. Other writing exists to conceal a lack of knowledge. When you read, it's immediately clear which is which.
+        </p>
+      </div>
+      <div class="philosophy-item">
+        <div class="philosophy-icon">03</div>
+        <h3 class="philosophy-title">Stories That Matter</h3>
+        <p class="philosophy-desc">
+          The tech industry knows which stories matter to the people who work in it. Traditional media doesn't always know how to focus on the parts of the story that actually matter.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="writing">
+    <div class="section-header reveal">
+      <span class="section-number">03</span>
+      <h2 class="section-title">Featured Work</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="writing-list">
+      <a href="https://www.a16z.news/p/toward-a-working-definition-of-paperclip" class="writing-item reveal" target="_blank">
+        <span class="writing-index">001</span>
+        <div>
+          <h3 class="writing-title">Toward a Working Definition of Paperclip-Punk</h3>
+          <span class="writing-meta">a16z News • Design</span>
+        </div>
+        <span class="writing-arrow">→</span>
+      </a>
+      <a href="https://a16z.com/news" class="writing-item reveal" target="_blank">
+        <span class="writing-index">002</span>
+        <div>
+          <h3 class="writing-title">More Writing on a16z</h3>
+          <span class="writing-meta">a16z Substack • Various</span>
+        </div>
+        <span class="writing-arrow">→</span>
+      </a>
+    </div>
+  </section>
+
+  <section id="contact" class="contact-section">
+    <div class="section-header reveal">
+      <span class="section-number">04</span>
+      <h2 class="section-title">Get in Touch</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="contact-grid">
+      <p class="contact-text reveal">
+        Parsing charts, trendlines, and primary sources—then making sense of it all.
+        <strong>Writing that takes the art of understanding what's really going on seriously.</strong>
+      </p>
+
+      <div class="contact-links reveal">
+        <a href="https://twitter.com/VirtualElena" class="contact-link" target="_blank">
+          <span class="contact-link-label">Twitter</span>
+          @VirtualElena
+        </a>
+        <a href="https://a16z.com/news" class="contact-link" target="_blank">
+          <span class="contact-link-label">Writing</span>
+          a16z Substack
+        </a>
+        <a href="https://a16z.com" class="contact-link" target="_blank">
+          <span class="contact-link-label">Firm</span>
+          a16z.com
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2025 Elena Burger</span>
+    <div class="status">
+      <span class="status-dot"></span>
+      <span>Available for collaboration</span>
+    </div>
+  </footer>
+
+  <script>
+    // Progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      document.getElementById('progressBar').style.width = scrolled + '%';
+    });
+
+    // Scroll reveal animation
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            entry.target.classList.add('visible');
+          }, index * 100);
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Smooth scroll for nav links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
